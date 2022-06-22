@@ -1,5 +1,6 @@
 <template>
   <div v-if="isLoading">Load</div>
+  <div v-else-if="error">Error</div>
   <div v-else data-testid="profile-info">
     <div>
       {{ post.userId }}
@@ -9,7 +10,6 @@
     </div>
 
   </div>
-  <div v-if="error !== ''">{{ error }}</div>
 </template>
 
 <script setup lang="ts">
@@ -17,7 +17,7 @@ import {onMounted, ref, reactive} from 'vue'
 import {fetchPosts} from "../api";
 
 const isLoading = ref(false)
-const error = ref('')
+const error = ref(false)
 const post = reactive({})
 
 const fetch = async () => {
@@ -26,7 +26,7 @@ const fetch = async () => {
     const data = await fetchPosts()
     Object.assign(post, data)
   } catch (e) {
-    error.value = 'error'
+    error.value = true
   } finally {
     isLoading.value = false
   }

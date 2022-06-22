@@ -1,40 +1,58 @@
-import ProfileInfo from '../components/ProfileInfo.vue'
-import '@testing-library/jest-dom'
-import { expect} from 'vitest'
+import ProfileInfo from "../components/ProfileInfo.vue";
+import "@testing-library/jest-dom";
+import { expect, MockedFunction } from "vitest";
 import axios from "axios";
-import {post} from "../mocks";
-import {render, waitFor} from "@testing-library/vue";
+import { post } from "../mocks";
 
-describe('component ProfileInfo',  () => {
-  // it('mounting', async () => {
-  //   const view = render(ProfileInfo)
-  //   expect(view).toBeDefined()
-  // })
+import { render, waitFor } from "@testing-library/vue";
 
-  it('api loading', async () => {
-    const view = render(ProfileInfo)
-    // const spy = vi.spyOn(axios, 'get')
+vi.mock("axios", () => ({
+  default: {
+    get: vi.fn(),
+  },
+}));
+
+describe("component ProfileInfo", () => {
+  // it("api loading", async () => {
+  //   (axios.get as MockedFunction<typeof axios["get"]>).mockResolvedValue(
+  //       undefined
+  //   );
+  //
+  //   const view = render(ProfileInfo);
+  //
+  //   await waitFor(() => {
+  //     expect(view.getByText("Load")).toBeInTheDocument();
+  //   });
+  //
+  //   expect(view.queryByText(post.userId)).not.toBeInTheDocument();
+  // });
+  //
+  // it("api success", async () => {
+  //   (axios.get as MockedFunction<typeof axios["get"]>).mockResolvedValue({
+  //     data: post,
+  //   });
+  //
+  //   const view = render(ProfileInfo);
+  //
+  //   await waitFor(() => {
+  //     expect(view.getByText(post.userId)).toBeInTheDocument();
+  //   });
+  //
+  //   expect(view.queryByText("Load")).not.toBeInTheDocument();
+  // });
+
+  it("api error", async () => {
+    (axios.get as MockedFunction<typeof axios["get"]>).mockRejectedValue(
+        Error("Error")
+    );
+
+    const view = render(ProfileInfo);
+
     await waitFor(() => {
-      expect(view.getByText('Load')).toBeInTheDocument()
-    })
-  })
+      expect(view.getByText("Error")).toBeInTheDocument();
+    });
 
-  it('api success', async () => {
-    const view = render(ProfileInfo)
-    // const spy = vi.spyOn(axios, 'get').mockImplementation(() => Promise.resolve({
-    //   data: post,
-    // }))
-    await waitFor(() => {
-      expect(view.getByText(post.userId)).toBeInTheDocument()
-    })
-  })
-
-  it('api error', async () => {
-    const view = render(ProfileInfo)
-    const spy = vi.spyOn(axios, 'get').mockRejectedValue(new Error('Async error'))
-    await waitFor(() => {
-      expect(view.getByText('error')).toBeInTheDocument()
-    })
-  })
-
-})
+    expect(view.queryByText("Load")).not.toBeInTheDocument();
+    expect(view.queryByText(post.userId)).not.toBeInTheDocument();
+  });
+});
